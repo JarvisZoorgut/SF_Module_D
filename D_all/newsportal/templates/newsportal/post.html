@@ -1,0 +1,26 @@
+{% extends 'flatpages/default.html' %}
+
+{% load custom_filters_newsportal %}
+
+{% block title %}
+<title>НП: {{ post.title|truncatewords:2|censor }}</title>
+{% endblock title %}
+
+{% block content %}
+        <p>
+                <h1> {{ post.title|censor }} </h1>
+        </p>
+        <p>
+                <h2> {{ post.dateCreation|date:'d.m.Y'}} </h2>
+                {% if post.author.authorUser == user or user.is_superuser %}
+                        {% if post.categoryType == 'NW' %}
+                                <a href="/newsportal/news/{{ post.id }}/edit">Изменить</a>
+                                <a href="/newsportal/news/{{ post.id }}/delete">Удалить</a>
+                        {% else %}
+                                <a href="/newsportal/articles/{{ post.id }}/edit">Изменить</a>
+                                <a href="/newsportal/articles/{{ post.id }}/delete">Удалить</a>
+                        {% endif %}
+                {% endif %}
+        </p>
+        {{ post.text|censor }}
+{% endblock content %}

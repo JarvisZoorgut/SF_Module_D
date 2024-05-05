@@ -1,0 +1,17 @@
+{% extends 'flatpages/default.html' %}
+
+{% block content %}
+
+<p>
+<h2>Вход на сайт</h2>
+</p>
+<br>
+
+<form method="post" action="{% url 'login' %}">
+{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Войти">
+    <input type="hidden" name="next" value="{{ next }}">
+</form>
+
+{% endblock %}

@@ -1,0 +1,118 @@
+{% extends 'flatpages/default.html' %}
+
+<!-- Подключаем наши фильтры -->
+{% load custom_filters_store %}
+<!-- Подключаем новый файл с нашим тегом -->
+{% load custom_tags_store %}
+
+{% block title %}
+<title>Магазин</title>
+{% endblock title %}
+
+{% block content %}
+    <h1>Все товары</h1>
+    <!-- Используем переданную из представления переменную time_now
+    и применяем к ней фильтр date. По назначению этот фильтр очень похож
+    на метод strftime у объекта datetime в Python — вывод времени
+    в указанном формате. -->
+    <!-- Вот так выглядело использование переменной и фильтра -->
+    <!-- Вот так выглядело использование переменной и фильтра -->
+    <h3>{{ time_now|date:'M d Y l' }}</h3>
+    <!-- А вот так мы используем наш тег-->
+    <h3>{% current_time '%b %d %Y %a' %}</h3>
+    <!-- Если в переменной next_sale будет None,
+    то выведется указанный в фильтре текст -->
+    <h3> {{ next_sale|default_if_none:"Чуть позже сообщим о распродаже!" }} </h3>
+
+   {# Добавляем форму, которая объединяет набор полей, которые будут отправляться в запросе #}
+   <form action="" method="get">
+       {# Переменная, которую мы передали через контекст, может сгенерировать нам форму с полями #}
+       {{ filterset.form.as_p }}
+       {# Добавим кнопку отправки данных формы #}
+       <input type="submit" value="Найти" />
+   </form>
+
+    <hr>
+        {% if user.is_authenticated %}
+            <h3><a href="{% url 'subscriptions' %}">Подписаться на рассылку</a></h3>
+        {% endif %}
+    {# Теперь будем проверять не request.user.is_authenticated, а конкретные права #}
+    {% if perms.store.add_product %}
+    <h3><a href="/store/products/create">Добавить товар</a></h3>
+    {% endif %}
+    {% if products %}
+        <table cellspacing="0" cellpadding="10" rules="cols" border="2" width="100%">
+            <tr>
+                <td>Название</td>
+                <td>Описание</td>
+                <td>Категория</td>
+                <td>Цена</td>
+                <td>Количество</td>
+
+                {# Условие получается составным. #}
+                {% if perms.store.change_product or perms.store.delete_product %}
+                <td>Действия</td>
+                {% endif %}
+            </tr>
+          
+            <!-- Для каждого товара будете генерироваться новая строчка,
+            т.е. новый HTML код, который указан в теле цикла.
+            При этом сам цикл работает точно так же, как и в Python.
+            x — переменная цикла, т.е. наш товар полученный из списка -->
+            {% for x in products %}
+            <tr>
+                <!-- Не забываем, что переменные в шаблоне ничем не отличаются
+                от переменных в Python. Здесь также можно получать доступ к
+                полям объекта модели. Например, здесь мы выводим имя,
+                в следующем столбце описание, и т.д.  -->
+                <td>{{ x.name }}</td>
+                <!-- Добавим специальный фильтр truncatechars,
+                чтобы ограничить количество символов до 15.
+                Все остальные символы превратятся в многоточие. -->
+                <td>{{ x.description|truncatewords:1 }}</td>
+                <td>{{ x.category.name|truncatechars:5 }}</td>
+                <!-- Используем наш фильтр -->
+                <td>{{ x.price|currency:"usd" }}</td>
+                <td>{{ x.quantity }}</td>
+                <td>
+                    {# А здесь доступ для каждой ссылки теперь будем проверять отдельно #}
+                    {% if perms.store.change_product %}
+                    <a href="/store/products/{{ x.id }}/update">Изменить</a>
+                    {% endif %}
+                    {% if perms.store.delete_product %}
+                    <a href="/store/products/{{ x.id }}/delete">Удалить</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+
+        </table>
+    {% else %}
+        <h2>Товаров нет!</h2>
+    {% endif %}
+
+    {# Добавляем пагинацию на страницу #}
+
+    {# Информация о предыдущих страницах #}
+    {% if page_obj.has_previous %}
+        {# Для каждой ссылки пагинации указываем обработку через новый тег url_replace#}
+        <a href="?{% url_replace page=1 %}">1</a>
+        {% if page_obj.previous_page_number != 1 %}
+            ...
+            <a href="?{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
+        {% endif %}
+    {% endif %}
+ 
+    {# Информация о текущей странице #}
+    &nbsp&nbsp{{ page_obj.number }}&nbsp&nbsp
+ 
+    {# Информация о следующих страницах #}
+    {% if page_obj.has_next %}
+        <a href="?{% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
+        {% if paginator.num_pages != page_obj.next_page_number %}
+            ...
+            <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+        {% endif %}
+    {% endif %}
+
+{% endblock content %}

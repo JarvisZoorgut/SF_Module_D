@@ -1,0 +1,50 @@
+{% extends 'flatpages/default.html' %}
+
+{% load custom_filters_newsportal %}
+{% load custom_tags_newsportal %}
+
+{% block title %}
+<title>Новостной портал</title>
+{% endblock title %}
+
+{% block content %}
+    <br>
+    <form action="" method="get">
+        {# Переменная, которую мы передали через контекст, может сгенерировать нам форму с полями #}
+        {{ filterset.form.as_p }}
+        {# Добавим кнопку отправки данных формы #}
+        <input type="submit" value="Найти" />
+    </form>
+    <hr>
+    <h1>Всего новостей найдено - {{ total_posts_count }}</h1>
+    <hr>
+    {% if posts %}
+           {% for post in posts %}
+           <tr>
+                {{ post.title|censor }} &nbsp&nbsp | &nbsp&nbsp
+                {{ post.dateCreation|date:'d.m.Y'}} &nbsp&nbsp | &nbsp&nbsp
+                {{ post.text|truncatewords:20|censor}}
+                <br>
+           {% endfor %}
+    {% else %}
+        <!-- <h2>Новостей нет</h2> -->
+    {% endif %}
+    {% if total_posts_count > 10 %}
+        {% if page_obj.has_previous %}
+        <a href="?{% url_replace page=1 %}">1</a>
+            {% if page_obj.previous_page_number != 1 %}
+                ...
+                <a href="?{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
+            {% endif %}
+        {% endif %}
+            &nbsp&nbsp{{ page_obj.number }}&nbsp&nbsp
+        {% if page_obj.has_next %}
+        <a href="?{% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
+            {% if paginator.num_pages != page_obj.next_page_number %}
+                ...
+                <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+
+{% endblock content %}

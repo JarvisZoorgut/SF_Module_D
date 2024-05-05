@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>FanZone MMORPG</title>
+    <!-- Core theme CSS (includes Bootstrap)-->
+    {% load static %}
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="d-flex" id="wrapper">
+        <!-- Sidebar-->
+        <div class="border-end bg-white" id="sidebar-wrapper">
+            <div class="list-group list-group-flush">
+                <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'advertisements_list' %}">Доска объявлений</a>
+                {% if user.is_authenticated %}
+                <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'responses_list' %}">Мои отклики</a>
+                {% endif %}
+                {% if user.is_authenticated %}
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                        <button type="submit" class="list-group-item list-group-item-action list-group-item-light p-3"
+                            style="font-weight: bold;">Выход ({{ user.username }})</button>
+                </form>
+                {% else %}
+                    <strong><a class="list-group-item list-group-item-action list-group-item-light p-3"
+                                href="{% url 'login' %}">Вход</a></strong>
+                    <strong><a class="list-group-item list-group-item-action list-group-item-light p-3"
+                                href="{% url 'signup' %}">Регистрация</a></strong>
+                {% endif %}
+                <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/">О нас</a>
+                <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/admin/">Админ</a>
+            </div>
+        </div>
+        <!-- Page content wrapper-->
+        <div id="page-content-wrapper">
+            <!-- Page content-->
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 text-center">
+                        {% block content %}
+                        {{ flatpage.content }}
+                        {% endblock content %}
+                    </div>
+                </div>
+            </div>
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

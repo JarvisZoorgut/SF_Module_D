@@ -1,0 +1,17 @@
+Django
+Linux
+$ python3 -m venv venv
+~/django-projects $ source venv/bin/activate
+(venv) ~/django-projects $ pip3 install django
+(venv) ~/django-projects $ django-admin startproject NewsPaper
+(venv) ~/django-projects/NewsPaper $ python3 manage.py startapp news
+
+Win
+python -m venv venv
+venv\scripts\activate
+pip install django
+django-admin startproject NewsPaper
+python manage.py startapp news
+python manage.py migrate
+python manage.py runserver
+python manage.py makemigration

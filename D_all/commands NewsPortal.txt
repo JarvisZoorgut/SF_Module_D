@@ -1,0 +1,85 @@
+u1 = User.objects.create_user(username='Ivan') 
+u2 = User.objects.create_user(username='Nika')
+u2 = User.objects.create_user(username='Toni') 
+
+Author.objects.create(authorUser=u1)
+Author.objects.create(authorUser=u2)
+Author.objects.create(authorUser=u3)
+
+Category.objects.create(categoryName='IT')
+Category.objects.create(categoryName='BUSINESS')
+Category.objects.create(categoryName='ECOLOGY')  
+Category.objects.create(categoryName='POLITICS') 
+
+author = Author.objects.get(id=1)
+Post.objects.create(author=author, categoryType='NW', title='Саша', content='Шла Саша по шоссе и сосала сушку') 
+author = Author.objects.get(id=2)    
+Post.objects.create(author=author, categoryType='AR', title='Погода', content='Сегодня ясная поогода')   
+Post.objects.create(author=author, categoryType='AR', title='Рынок', content='Доллар снова 61')
+Post.objects.create(author=c, title='Политика', content='Политики валят биржу') 
+
+
+Post.objects.get(id=1).category.add(Category.objects.get(id=4)) 
+Post.objects.get(id=1).category.add(Category.objects.get(id=2)) 
+Post.objects.get(id=2).category.add(Category.objects.get(id=3)) 
+Post.objects.get(id=2).category.add(Category.objects.get(id=4))
+Post.objects.get(id=3).category.add(Category.objects.get(id=4))
+Post.objects.get(id=3).category.add(Category.objects.get(id=2))
+Post.objects.get(id=4).category.add(Category.objects.get(id=2)) 
+Post.objects.get(id=4).category.add(Category.objects.get(id=4)) 
+
+Comment.objects.create(comment='Хорошая новость', commentUser=User.objects.get(id=3), commentPost=Post.objects.get(id=1)) 
+Comment.objects.create(comment='Вот это да...', commentUser=Author.objects.get(id=2).authorUser, commentPost=Post.objects.get(id=1))
+Comment.objects.create(comment='Согласен!', commentUser=Author.objects.get(id=1).authorUser, commentPost=Post.objects.get(id=2))
+Comment.objects.create(comment='Пусть растет, я вложился!', commentUser=User.objects.get(id=3), commentPost=Post.objects.get(id=3))  
+ 
+Comment.objects.get(id=1).like()
+Comment.objects.get(id=1).like()   
+Comment.objects.get(id=2).like() 
+Comment.objects.get(id=2).dislike() 
+Comment.objects.get(id=2).dislike()
+Post.objects.get(id=1).like()
+Post.objects.get(id=1).like()
+Post.objects.get(id=2).like()
+Post.objects.get(id=3).like() 
+Post.objects.get(id=3).like()
+Post.objects.get(id=3).like()
+Post.objects.get(id=4).like() 
+Post.objects.get(id=4).dislike() 
+Post.objects.get(id=4).dislike()
+Post.objects.get(id=4).dislike()
+       
+Post.objects.get(id=1).rating
+
+a = Author.objects.get(id=1)
+b = Author.objects.get(id=2) 
+c = Author.objects.get(id=3)
+a.update_rating()
+b.update_rating()
+c.update_rating()  
+
+filter_author = Author.objects.order_by('-ratingAuthor')[:1]
+>>> for i in filter_author:me
+...     i.authorUser.username
+...     i.ratingAuthor      
+
+filter_post = Post.objects.order_by('-rating')[:1]
+>>> for i in filter_post:
+...     i.postTime.strftime("%A %d %B %Y %H:%M:%S") 
+...     i.author.authorUser.username
+...     i.rating 
+...     i.title
+...     i.preview()
+
+filter_post = Post.objects.order_by('-rating')[0]
+filter_post.comment_set.all().values('commentTime', 'commentUser__username', 'rating', 'comment')
+
+
+
+
+
+
+
+
+
+

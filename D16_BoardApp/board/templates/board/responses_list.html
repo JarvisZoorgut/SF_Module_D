@@ -1,0 +1,78 @@
+{% extends 'flatpages/default.html' %}
+{% load custom_tags_board %}
+
+{% block content %}
+<body>
+    <h1>Отклики на мои объявления</h1>
+    {# Добавляем форму, которая объединяет набор полей, которые будут отправляться в запросе #}
+    <form action="" method="get">
+        {# Переменная, которую мы передали через контекст, может сгенерировать нам форму с полями #}
+        {{ filterset.form.as_p }}
+        {# Добавим кнопку отправки данных формы #}
+        <input type="submit" value="Фильтровать" />
+    </form>
+    <br>
+    {% if object_list %}
+    <table>
+        <thead>
+            <tr>
+                <th>Дата</th>
+                <th>Объявление</th>
+                <th>Отправитель</th>
+                <th>Отклик</th>
+                <th>Статус</th>
+                <th>Удалить отклик</th>
+                <th>Автор</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for response in responses %}
+            {% if user.id != response.user.id %}
+            <tr>
+                <td>{{ response.created_at }}</td>
+                <td>{{ response.advertisement.title }}</td>
+                <td>{{ response.user.username }}</td>
+                <td>{{ response.content }}</td>
+                <td>
+                    {% if response.accepted %}
+                    Отклик принят
+                    {% else %}
+                    <form action="{% url 'accept_response' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="response_id" value="{{ response.id }}">
+                        <button type="submit">Принять отклик</button>
+                    </form>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'response_delete' pk=response.id %}">Удалить отклик</a>
+                </td>
+                <td>{{ response.advertisement.creator }}</td>
+                </tr>
+            {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <h2>Откликов нет</h2>
+    {% endif %}
+    <br>
+        {% if paginator.num_pages > 1 %}
+            {% if page_obj.has_previous %}
+            <a href="?{% url_replace page=1 %}">1</a>
+                {% if page_obj.previous_page_number != 1 %}
+                ...
+                <a href="?{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
+                {% endif %}
+            {% endif %}
+                &nbsp&nbsp{{ page_obj.number }}&nbsp&nbsp
+            {% if page_obj.has_next %}
+            <a href="?{% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
+                {% if paginator.num_pages != page_obj.next_page_number %}
+                ...
+                <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+</body>
+{% endblock content %}

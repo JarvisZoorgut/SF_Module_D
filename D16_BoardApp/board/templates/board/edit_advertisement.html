@@ -1,0 +1,22 @@
+{% extends 'flatpages/default.html' %}
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block title %}
+    <title>Редактирование объявления</title>
+    {% endblock title %}
+</head>
+<body>
+    {% block content %}
+    <br>
+    <form action="" method="post">
+         {% csrf_token %} 
+         {{ form.as_p }} 
+         <input type="submit" value="Сохранить">
+    </form>
+    {% endblock content %}
+</body>
+</html>

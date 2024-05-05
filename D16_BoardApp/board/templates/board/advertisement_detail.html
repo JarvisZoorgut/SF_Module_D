@@ -1,0 +1,40 @@
+{% extends 'flatpages/default.html' %}
+
+{% load static %}
+
+{% block content %}
+<body>
+    <h1>{{ advertisement.title }}</h1>
+    {% if user.is_authenticated and user == advertisement.creator %}
+        <p>
+            <a href="{{ advertisement.get_absolute_url }}edit/">Редактировать объявление</a>
+            <br>
+            <a href="{{ advertisement.get_absolute_url }}delete/">Удалить объявление</a>
+        </p>
+    {% endif %}
+    <p><strong>Объявление:</strong> {{ advertisement.content|safe }}</p>
+    <p><strong>Пользователь:</strong> {{ advertisement.creator }}</p>
+    <p><strong>Дата создания:</strong> {{ advertisement.created_at }}</p>
+
+    <!-- Форма для отправки отклика -->
+    {% if user.is_authenticated and user != advertisement.creator %}
+        {% if response_sent %}
+            <p><strong>Отклик отправлен</strong></p>
+        {% else %}
+            <p><strong>Написать отклик на объявление:</strong></p>
+            <form method="post">
+                {% csrf_token %}
+                {{ response_form.as_p }}
+                <button type="submit">Отправить отклик</button>
+            </form>
+        {% endif %}
+    {% endif %}
+    
+    <!-- Сообщение об успешной отправке отклика -->
+    {% if messages %}
+        {% for message in messages %}
+            <div>{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+</body>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'flatpages/default.html' %}
+
+{% load custom_filters_newsportal %}
+{% load custom_tags_newsportal %}
+
+{% block title %}
+<title>Новостной портал</title>
+{% endblock title %}
+
+{% block content %}
+    <p>
+        <h1>Всего объектов на портале - {{ total_posts_count }}</h1>
+        {% if user.is_authenticated %}
+            <h6><a href="{% url 'subscriptions' %}">Подписаться на рассылку новостей по категориям</a></h6>
+        {% endif %}
+    </p>
+
+    {% if user_is_author %}
+        <a href="{% url 'news_create' %}">Добавить новость</a>
+        <a href="{% url 'article_create' %}">Написать статью</a>
+    {% endif %}  
+    <hr>
+    <h3><a href="{% url 'post_search' %}">Поиск контента</a></h3>
+    {% if posts %}
+           {% for post in posts %}
+           <tr>
+                <a href="{% url 'post' post.id %}">{{ post.title|censor }}</a> &nbsp&nbsp | &nbsp&nbsp
+                {{ post.dateCreation|date:'d.m.Y'}} &nbsp&nbsp | &nbsp&nbsp
+                {{ post.text|truncatechars:100|censor}}
+                <br>
+           {% endfor %}
+   {% else %}
+        <h2>Новостей нет</h2>
+    {% endif %}
+    {% if total_posts_count > 10 %}
+        {% if page_obj.has_previous %}
+        <a href="?{% url_replace page=1 %}">1</a>
+            {% if page_obj.previous_page_number != 1 %}
+                ...
+                <a href="?{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
+            {% endif %}
+        {% endif %}
+            &nbsp&nbsp{{ page_obj.number }}&nbsp&nbsp
+        {% if page_obj.has_next %}
+        <a href="?{% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
+            {% if paginator.num_pages != page_obj.next_page_number %}
+                ...
+                <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+
+{% endblock content %}

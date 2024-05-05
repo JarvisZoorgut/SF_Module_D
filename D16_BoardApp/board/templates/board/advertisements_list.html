@@ -1,0 +1,39 @@
+{% extends 'flatpages/default.html' %}
+
+{% load custom_tags_board %}
+
+{% block content %}
+<h2>Все объявления</h2>
+    {% if user.is_authenticated %}
+        <p><a href="{% url 'create_advertisement' %}">Добавить объявление</a></p>
+    {% endif %}
+    {% for advertisement in advertisements %}
+        <div>
+            <h3><a href="{% url 'advertisement_detail' advertisement.id %}">{{ advertisement.title }}</a></h3>
+            <p>{{ advertisement.text }}</p>
+            <p>Категория: {{ advertisement.category }}</p>
+            <p>Пользователь: {{ advertisement.creator }} | Дата публикации: {{ advertisement.created_at }}</p>
+        </div>
+        <hr>
+    {% empty %}
+        <p>Нет объявлений для отображения.</p>
+    {% endfor %}
+        <br>
+        {% if paginator.num_pages > 1 %}
+            {% if page_obj.has_previous %}
+                <a href="?{% url_replace page=1 %}">1</a>
+                {% if page_obj.previous_page_number != 1 %}
+                ...
+                <a href="?{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
+                {% endif %}
+            {% endif %}
+                &nbsp&nbsp{{ page_obj.number }}&nbsp&nbsp
+            {% if page_obj.has_next %}
+                <a href="?{% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
+                {% if paginator.num_pages != page_obj.next_page_number %}
+                ...
+                <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+{% endblock content %}
